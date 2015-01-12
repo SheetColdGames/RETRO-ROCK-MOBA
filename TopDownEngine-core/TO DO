@@ -1,0 +1,23 @@
+OMG! This is in portuguese ffs!
+
+Vou escrever tudo o que vem na minha cabeça agora que eu penso a partir dos jogos
+de top down que eu já joguei.
+Isso não está escrito numa ordem específica, é só tudo o que me vem à cabeça
+pro caso de ficar sem saber o que é mais importante ou viável para criação em um
+dado momento.
+
+- Criar mapa e seu tamanho
+- Ser capaz de percorrer um mapa
+- Criar uma forma de editar o cenário do mapa
+- Fazer a personagem se movimentar pelo mapa
+- Criar sistema de checkpoint
+- Ser capaz de trabalhar com múltiplas entidades, controlando-as também
+- Renderizar movimentos simples da personagem
+- Criar colisão
+- Tocar música, editar volume
+- Tocar efeitos sonoros
+- Criar pathfinding
+- Criar padrões de movimento para os personagens do jogo baseados em caminhos pré determinados
+- Criar diferentes eventos que invocam diferentes comportamentos da IA
+- Criar cutscenes e scripts de eventos baseados no fps e tal
+- Criar forma de escrever textos na tela

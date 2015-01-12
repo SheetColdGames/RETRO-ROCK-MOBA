@@ -1,0 +1,11 @@
+.metadata/
+TopDownEngine-core/.settings/
+TopDownEngine-core/bin/
+TopDownEngine-core/libs/gdx.jar
+TopDownEngine-core/libs/gdx-sources.jar
+TopDownEngine-desktop/libs/.settings/
+TopDownEngine-desktop/bin/
+TopDownEngine-desktop/libs/gdx-backend-lwjgl.jar
+TopDownEngine-desktop/libs/gdx-backend-lwjgl-natives.jar
+TopDownEngine-desktop/libs/gdx-natives.jar
+RemoteSystemsTempFiles/
