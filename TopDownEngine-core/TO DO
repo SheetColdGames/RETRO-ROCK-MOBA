@@ -6,14 +6,14 @@ Isso não está escrito numa ordem específica, é só tudo o que me vem à cabeça
 pro caso de ficar sem saber o que é mais importante ou viável para criação em um
 dado momento.
 
-- Criar mapa e seu tamanho
-- Ser capaz de percorrer um mapa
-- Criar uma forma de editar o cenário do mapa
-- Fazer a personagem se movimentar pelo mapa
+- Criar mapa e seu tamanho (NÃO PRECISA)
+- Ser capaz de percorrer um mapa (FEITO)
+- Criar uma forma de editar o cenário do mapa (FEITO)
+- Fazer a personagem se movimentar pelo mapa (FEITO)
 - Criar sistema de checkpoint
 - Ser capaz de trabalhar com múltiplas entidades, controlando-as também
 - Renderizar movimentos simples da personagem
-- Criar colisão
+- Criar colisão (ALMOST)
 - Tocar música, editar volume
 - Tocar efeitos sonoros
 - Criar pathfinding

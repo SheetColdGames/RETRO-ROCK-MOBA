@@ -114,6 +114,8 @@ public class Input implements InputProcessor {
 		KEY_TOGGLE_GRID = Keys.T;
 		KEY_TOGGLE_MAP = Keys.M;
 		
+		KEY_SAVE_POINTS = Keys.B;
+		
 		KEY_CTRL = Keys.CONTROL_LEFT;
 		KEY_SHIFT = Keys.SHIFT_LEFT;
 	}
@@ -237,6 +239,7 @@ public class Input implements InputProcessor {
 			this.lastMouseButton = MOUSE_BUTTON.RIGHT;
 		}
 		mouseDragged = false;
+		mouseDown = false;
 		mouseReleased = true;
 		return true;
 	}

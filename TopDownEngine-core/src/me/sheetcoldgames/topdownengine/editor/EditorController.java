@@ -15,6 +15,34 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
 
+/**
+ * Collision detection editor
+ * 
+ * This editor will be heavily commented and will be thought of using linked
+ * lists.
+ * 
+ * Let's define something about the controls, so you might call this section as
+ * --- INSTRUCTIONS ---
+ * --- LMB -> Left Mouse Button
+ * --- RMB -> Right Mouse Button
+ * - WASD updates the camera position
+ * - LMB adds a new point and connects it with the last point of the group
+ * - Holding CTRL after LMB places the point on a number divisible by 5 (1.0, 1.5, 2.0, etc...)
+ * - Holding SHIFT and LMB on an: 
+ * 		* existing point from active group: inserts a new point after the selected one
+ * 		* empty space: creates a new group with that new starting point
+ * - RMB deletes an existing point
+ * - Deleting a point connects its previous point with its next point
+ * - Deleting the only point of a group, deletes the group as well
+ * - Q and E navigates through the available groups of points.
+ * - R toggles the grid color to be brighter/darker
+ * - SPACE BAR toggles the background reference map
+ * - CTRL+X prints the map coordinates on the console
+ * - WARNING! THERE IS NO UNDO KEY TO THIS EDITOR, BE CAREFUL WHILE EDITING!
+ * 
+ * @author Rafael Giordanno
+ *
+ */
 public class EditorController {
 	/** The editor camera, nothing special **/
 	OrthographicCamera camera;
@@ -131,11 +159,11 @@ public class EditorController {
 	/** Moves the camera around for simplicity */
 	private void cameraControls() {
 		// === begin camera controls
-		if (input.buttons[Input.UP]) camera.position.y += cameraSpeed;
-		else if (input.buttons[Input.DOWN]) camera.position.y -= cameraSpeed;
+		if (input.buttons[Input.CAM_UP]) camera.position.y += cameraSpeed;
+		else if (input.buttons[Input.CAM_DOWN]) camera.position.y -= cameraSpeed;
 		
-		if (input.buttons[Input.RIGHT]) camera.position.x += cameraSpeed;
-		else if (input.buttons[Input.LEFT]) camera.position.x -= cameraSpeed;
+		if (input.buttons[Input.CAM_RIGHT]) camera.position.x += cameraSpeed;
+		else if (input.buttons[Input.CAM_LEFT]) camera.position.x -= cameraSpeed;
 		// === end of camera controls
 	}
 	

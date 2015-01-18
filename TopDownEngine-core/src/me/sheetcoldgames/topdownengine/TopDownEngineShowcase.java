@@ -1,26 +1,49 @@
 package me.sheetcoldgames.topdownengine;
 
-import me.sheetcoldgames.topdownengine.engine.Controller;
+import me.sheetcoldgames.topdownengine.engine.Input;
+import me.sheetcoldgames.topdownengine.engine.JVController;
+import me.sheetcoldgames.topdownengine.engine.RGController;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 
 public class TopDownEngineShowcase extends ApplicationAdapter {
+	Input input;
 	
-	Controller controller;
-	GameRenderer renderer;
+	JVController jvController;
+	RGController rgController;
+	
+	JVRenderer jvRenderer;
+	RGRenderer rgRenderer;
 	
 	public void create() {
-		controller = new Controller();
-		renderer = new GameRenderer(controller);
+		input = new Input();
+		
+		jvController = new JVController(input);
+		rgController = new RGController(input);
+		
+		jvRenderer = new JVRenderer(jvController);
+		rgRenderer = new RGRenderer(rgController);
+		
+		Gdx.input.setInputProcessor(input);
 	}
 	
 	public void dispose() {
-		renderer.dispose();	
+		rgController.dispose();
+		jvController.dispose();
+		
+		jvRenderer.dispose();
+		rgRenderer.dispose();
 	}
 	
 	public void render() {
-		controller.update();
-		renderer.render();
+		if (jvController.isFinished) {
+			rgController.update();
+			rgRenderer.render();
+		} else {
+			jvController.update();
+			jvRenderer.render();
+		}
 	}
 
 }
