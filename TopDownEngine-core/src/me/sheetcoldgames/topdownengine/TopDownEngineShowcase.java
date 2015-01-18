@@ -1,23 +1,26 @@
 package me.sheetcoldgames.topdownengine;
 
+import me.sheetcoldgames.topdownengine.engine.Controller;
+
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.MathUtils;
 
 public class TopDownEngineShowcase extends ApplicationAdapter {
 	
+	Controller controller;
+	GameRenderer renderer;
+	
 	public void create() {
-		
+		controller = new Controller();
+		renderer = new GameRenderer(controller);
 	}
 	
 	public void dispose() {
-		
+		renderer.dispose();	
 	}
 	
 	public void render() {
-		Gdx.gl.glClearColor(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		controller.update();
+		renderer.render();
 	}
 
 }
