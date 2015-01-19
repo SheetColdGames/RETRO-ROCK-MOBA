@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-up" width="100" height="75" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16">
+  <image source="tileset.png" width="512" height="512"/>
+ </tileset>
+ <layer name="floor" width="100" height="75">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20JT6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GdTAAAQ==
+  </data>
+ </layer>
+ <layer name="wall" width="100" height="75">
+  <data encoding="base64" compression="zlib">
+   eJzt2zsKwzAUAEH5/pdOHxJiCYssaAZe6cYL1gd8jTEukxoa9GjRo0WPFj1a9GjRo0WPFj1a9OhwPm/Ro0WPHj1a9GjRo0WPFj067K9a9GjRo0WPFj1a9GjRo0WPFj1a9GjRo0WPFj1a9GjRY87uf2v0mLPynvTYR48WPVr0OIseLXq06DHH+tGiR8vOHqtn+pPp0fLk/dVTd17soUeLHi16tOjRokeLHvPu7EtX9656zNOjRY+WXT2cz9focQY9WvRo0aNFjzXW8xY9WnaeB9+f5zc9WtyXnMH60aJHix4dn1ro8T969OjRokfLt2+WacwLJGYCVw==
+  </data>
+ </layer>
+ <layer name="roof" width="100" height="75" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJzt0VEJACAUwMBXzf6lzOCHMPQOlmAzAAAAAAAAAAAAAAAAALxuHcZdfrT40eJHix8tfrT40eJHix8tfrT4AQAAAAAAAAAAAADALzb6JSGF
+  </data>
+ </layer>
+</map>
