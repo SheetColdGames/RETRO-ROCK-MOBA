@@ -66,7 +66,7 @@ public class EditorRenderer {
 	private void renderMap() {
 		if (controller.toggleMap) {
 			mapRenderer.setView(controller.camera);
-			mapRenderer.render(background);
+			mapRenderer.render();
 			// mapRenderer.render(foreground);
 		}
 	}
@@ -111,7 +111,9 @@ public class EditorRenderer {
 			if (controller.selectedPointIndex == controller.points.size()-1 && controller.currentGroup == groupIndex) {
 				sr.setColor(Colors.SELECTED_POINT);
 			}
-			renderPoint(controller.points.getLast());
+			if (!controller.groupPoints.get(0).isEmpty()) {
+				renderPoint(controller.points.getLast());
+			}
 		}
 		
 	}

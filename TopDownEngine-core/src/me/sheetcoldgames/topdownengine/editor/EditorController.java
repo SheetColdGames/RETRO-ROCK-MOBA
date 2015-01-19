@@ -100,10 +100,10 @@ public class EditorController {
 		groupPoints.add(points);
 		
 		// We're adding this points for debugging purposes
-		loadMap("ending.fis");
+		loadMap("test.fis");
 		
 		// Map
-		map = new TmxMapLoader().load("ending.tmx");	
+		map = new TmxMapLoader().load("test.tmx");	
 	}
 	
 	public void dispose() {
@@ -137,6 +137,10 @@ public class EditorController {
 			
 		}
 		scan.close();
+		if (i == -1) {
+			// We don't have any points, we must initialize with a group with no points
+			groupPoints.add(new LinkedList<SheetPoint>());
+		}
 	}
 	
 	float dt;
