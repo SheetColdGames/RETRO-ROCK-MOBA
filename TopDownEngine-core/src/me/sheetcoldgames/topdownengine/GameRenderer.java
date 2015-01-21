@@ -3,6 +3,7 @@ package me.sheetcoldgames.topdownengine;
 import me.sheetcoldgames.topdownengine.engine.GameController;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -37,6 +38,7 @@ public class GameRenderer {
 		sr.end();
 		
 		sr.begin(ShapeType.Line);
+		entityCollisionRenderer();
 		renderMapPoints();
 		sr.end();
 	}
@@ -48,7 +50,52 @@ public class GameRenderer {
 	
 	private void renderPlayer() {
 		sr.setColor(Colors.PLAYER);
-		sr.circle(controller.player.position.x, controller.player.position.y, .5f, 16);
+		sr.rect(controller.player.position.x-controller.player.width/2f,
+				controller.player.position.y-controller.player.height/2f,
+				controller.player.width, controller.player.height);
+	}
+	
+	private void entityCollisionRenderer() {
+		sr.setColor(Color.RED);
+		// horizontal top line
+		sr.line(controller.player.position.x - controller.player.width/2f - Math.abs(controller.player.velocity.x) - controller.player.offset,
+				controller.player.position.y + controller.player.height/2f,
+				controller.player.position.x + controller.player.width/2f + Math.abs(controller.player.velocity.x) + controller.player.offset,
+				controller.player.position.y + controller.player.height/2f);
+		
+		// horizontal bottom line
+		sr.line(controller.player.position.x - controller.player.width/2f - Math.abs(controller.player.velocity.x) - controller.player.offset,
+				controller.player.position.y - controller.player.height/2f,
+				controller.player.position.x + controller.player.width/2f + Math.abs(controller.player.velocity.x) + controller.player.offset,
+				controller.player.position.y - controller.player.height/2f);
+		
+		// vertical left line
+		sr.line(controller.player.position.x - controller.player.width/2f,
+				controller.player.position.y - controller.player.height/2f - Math.abs(controller.player.velocity.y) - controller.player.offset,
+				controller.player.position.x - controller.player.width/2f,
+				controller.player.position.y + controller.player.height/2f + Math.abs(controller.player.velocity.y) + controller.player.offset);
+		
+		// vertical right line
+		sr.line(controller.player.position.x + controller.player.width/2f,
+				controller.player.position.y - controller.player.height/2f - Math.abs(controller.player.velocity.y) - controller.player.offset,
+				controller.player.position.x + controller.player.width/2f,
+				controller.player.position.y + controller.player.height/2f + Math.abs(controller.player.velocity.y) + controller.player.offset);
+		
+		/*
+		sr.rect(controller.player.position.x - controller.player.width/2f - Math.abs(controller.player.velocity.x), 
+				controller.player.position.y - controller.player.height/2f - Math.abs(controller.player.velocity.y),
+				controller.player.width + Math.abs(controller.player.velocity.x),
+				controller.player.height + Math.abs(controller.player.velocity.y));
+		/*
+		sr.line(controller.player.position.x - Math.abs(controller.player.velocity.x) - controller.player.width/2f,
+				controller.player.position.y,
+				controller.player.position.x + Math.abs(controller.player.velocity.x) + controller.player.width/2f,
+				controller.player.position.y);
+		sr.line(controller.player.position.x,
+				controller.player.position.y - Math.abs(controller.player.velocity.y) - controller.player.height/2f,
+				controller.player.position.x,
+				controller.player.position.y + Math.abs(controller.player.velocity.y) + controller.player.height/2f);
+		*/
 	}
 	
 	private void renderMapPoints() {

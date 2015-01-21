@@ -97,6 +97,7 @@ public class GameController {
 		updatePlayer();
 		
 		camera.update();
+		// printLog();
 	}
 	
 	private void handleInput() {
@@ -107,28 +108,42 @@ public class GameController {
 		float walkSpeed = 1f;
 		
 		// horizontal motion
-		if (input.buttons[Input.RIGHT]) {
-			player.velocity.x += walkSpeed * dt;  
-		} else if (input.buttons[Input.LEFT]) {
-			player.velocity.x -= walkSpeed * dt;
+		if (input.buttons[Input.RIGHT] ^ input.buttons[Input.LEFT]) {
+			if (input.buttons[Input.RIGHT]) {
+				if (player.velocity.x == 0) {
+					player.velocity.x = player.minSpeed;
+				}
+				player.velocity.x += walkSpeed * dt;  
+			} else if (input.buttons[Input.LEFT]) {
+				if (player.velocity.x == 0) {
+					player.velocity.x = -player.minSpeed;
+				}
+				player.velocity.x -= walkSpeed * dt;
+			}
 		} else {
-			player.velocity.x = MathUtils.lerp(player.velocity.x, 0f, .3f);
+			player.velocity.x = MathUtils.lerp(player.velocity.x, 0f, .4f);
 		}
 		
 		// vertical motion
-		if (input.buttons[Input.UP]) {
-			player.velocity.y += walkSpeed * dt;
-		} else if (input.buttons[Input.DOWN]) {
-			player.velocity.y -= walkSpeed * dt;
+		if (input.buttons[Input.UP] ^ input.buttons[Input.DOWN]) {
+			if (input.buttons[Input.UP]) {
+				if (player.velocity.y == 0) {
+					player.velocity.y = player.minSpeed;
+				}
+				player.velocity.y += walkSpeed * dt;
+			} else if (input.buttons[Input.DOWN]) {
+				if (player.velocity.y == 0) {
+					player.velocity.y = -player.minSpeed;
+				}
+				player.velocity.y -= walkSpeed * dt;
+			}
 		} else {
-			player.velocity.y = MathUtils.lerp(player.velocity.y, 0f, .3f);
+			player.velocity.y = MathUtils.lerp(player.velocity.y, 0f, .4f);
 		}
 		
 		// clamping the maximum speed
 		player.velocity.x = MathUtils.clamp(player.velocity.x, -.2f, .2f);
 		player.velocity.y = MathUtils.clamp(player.velocity.y, -.2f, .2f);
-		
-		System.out.println(Gdx.graphics.getFramesPerSecond());
 	}
 	
 	/**
@@ -150,49 +165,100 @@ public class GameController {
 				SheetPoint p1 = groupPoints.get(currentGroup).get(currentPoint);
 				SheetPoint p2 = groupPoints.get(currentGroup).get(currentPoint+1);
 				// does this wall intersects the player?
-//				if (Intersector.intersectSegmentCircle(
-//						groupPoints.get(currentGroup).get(currentPoint).pos, 
-//						groupPoints.get(currentGroup).get(currentPoint+1).pos, 
-//						newEntPosition, player.sqrRadius)) {
-
+				// Let's check horizontally
 				if (Intersector.intersectSegments(
 						p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y,
-						player.position.x-player.radius, player.position.y,
-						player.position.x+player.radius, player.position.y,
-						intersectedPoint)) {
+						player.position.x - player.width/2f - Math.abs(player.velocity.x) - player.offset,
+						player.position.y + player.height/2f,
+						player.position.x + player.width/2f + Math.abs(player.velocity.x) + player.offset,
+						player.position.y + player.height/2f,
+						intersectedPoint)) { // TOP
 					// Checking horizontal collision
 					// Cancel horizontal velocity
 					player.velocity.x = 0;
 					// Update the horizontal position with a slight offset
 					// p1 and p2 have the same x position
-					if (p1.pos.x < player.position.x) {
+					if (intersectedPoint.x < player.position.x) {
 						// this value is smaller than the radius of the player (else, it wouldn't
 						float tmp = player.position.x - newEntPosition.x;
-						player.position.x = p1.pos.x + player.radius - tmp;
+						player.position.x = p1.pos.x + player.width/2f - tmp + player.offset + player.minSpeed;
 					} else {
 						float tmp = newEntPosition.x - player.position.x ;
-						player.position.x = p1.pos.x - player.radius + tmp;
+						player.position.x = p1.pos.x - player.width/2f + tmp - player.offset - player.minSpeed;
 					}
-				} else if (Intersector.intersectSegments(
+				}
+				if (Intersector.intersectSegments(
 						p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y,
-						player.position.x, player.position.y-player.radius,
-						player.position.x, player.position.y+player.radius,
-						intersectedPoint)) {
+						player.position.x - player.width/2f - Math.abs(player.velocity.x) - player.offset,
+						player.position.y - player.height/2f,
+						player.position.x + player.width/2f + Math.abs(player.velocity.x) + player.offset,
+						player.position.y - player.height/2f,
+						intersectedPoint)) { // BOTTOM
+					player.velocity.x = 0;
+					// Update the horizontal position with a slight offset
+					// p1 and p2 have the same x position
+					if (intersectedPoint.x < player.position.x) {
+						// this value is smaller than the radius of the player (else, it wouldn't
+						float tmp = player.position.x - newEntPosition.x;
+						player.position.x = intersectedPoint.x + player.width/2f - tmp + player.offset + player.minSpeed;
+					} else {
+						float tmp = newEntPosition.x - player.position.x ;
+						player.position.x = intersectedPoint.x - player.width/2f + tmp - player.offset - player.minSpeed;
+					}
+				} 
+				if (Intersector.intersectSegments(
+						p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y,
+						player.position.x - player.width/2f,
+						player.position.y - player.height/2f - Math.abs(player.velocity.y) - player.offset,
+						player.position.x - player.width/2f,
+						player.position.y + player.height/2f + Math.abs(player.velocity.y) + player.offset,
+						intersectedPoint)) { // LEFT
 					// Checking vertical collision
-					player.velocity.y = 0;
 					// Update the vertical position with a slight offset
-					if (p1.pos.y < player.position.y) {
+					if (intersectedPoint.y < player.position.y) {
 						// this value is smaller than the radius of the player (else, it wouldn't
 						float tmp = player.position.y - newEntPosition.y;
-						player.position.y = p1.pos.y + player.radius - tmp;
+						player.position.y = intersectedPoint.y + player.height/2f - tmp + player.offset + player.minSpeed;
+						// player.position.y = intersectedPoint.y + player.height/2f + player.offset + player.minSpeed;
 					} else {
-						float tmp = newEntPosition.y - player.position.y ;
-						player.position.y = p1.pos.y - player.radius + tmp;
-					}	
-				}	
+						float tmp = newEntPosition.y - player.position.y;
+						player.position.y = intersectedPoint.y - player.height/2f + tmp - player.offset - player.minSpeed;
+						// player.position.y = intersectedPoint.y - player.height/2f - player.offset - player.minSpeed;
+					}
+					// Do not forget to reset the velocity
+					player.velocity.y = 0;
+					
+				}
+				if (Intersector.intersectSegments(
+						p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y,
+						player.position.x + player.width/2f,
+						player.position.y - player.height/2f - Math.abs(player.velocity.y) - player.offset,
+						player.position.x + player.width/2f,
+						player.position.y + player.height/2f + Math.abs(player.velocity.y) + player.offset,
+						intersectedPoint)) { // RIGHT
+					// Checking vertical collision
+					
+					// Update the vertical position with a slight offset
+					if (intersectedPoint.y < player.position.y) {
+						// this value is smaller than the radius of the player (else, it wouldn't
+						float tmp = player.position.y - newEntPosition.y;
+						player.position.y = intersectedPoint.y + player.height/2f - tmp + player.offset + player.minSpeed;
+						// player.position.y = intersectedPoint.y + player.height/2f + player.offset + player.minSpeed;
+					} else {
+						float tmp = newEntPosition.y - player.position.y;
+						player.position.y = intersectedPoint.y - player.height/2f + tmp - player.offset - player.minSpeed;
+						// player.position.y = intersectedPoint.y - player.height/2f - player.offset - player.minSpeed;
+					}
+					// Don't forget to reset the velocity to 0
+					player.velocity.y = 0;
+				}
 			}
 		}
 		player.position.x += player.velocity.x;
 		player.position.y += player.velocity.y;
+	}
+	
+	private void printLog() {
+		System.out.println(Gdx.graphics.getFramesPerSecond());
 	}
 }

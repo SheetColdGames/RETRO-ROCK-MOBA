@@ -7,14 +7,20 @@ public class Entity {
 	public Vector2 position;
 	public Vector2 velocity;
 	
-	public float radius;
-	public float sqrRadius;
+	public float width;
+	public float height;
+	
+	public float offset;
+	
+	public float minSpeed;
 	
 	public Entity() {
 		position = new Vector2();
 		velocity = new Vector2();
-		radius = .5f;
-		sqrRadius = radius * radius;
+		width = .8f;
+		height = 1f;
+		offset = .2f;
+		minSpeed = offset / 4f;
 	}
 	
 }
