@@ -2,6 +2,7 @@ package me.sheetcoldgames.topdownengine.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -20,9 +21,10 @@ public class HostController {
 	private BufferedReader bufferedReader;
 	//private String inputLine;
 	private int clientCmd;
+	private String clientStatus;
 	private InetAddress hostAddress;
 	private PrintWriter printWriter;
-
+	private String[] clientHash = {"0","90f","12f"};
 	
 	public HostController(){
 		try{
@@ -44,6 +46,10 @@ public class HostController {
 		System.out.println("Socket "+serverSocket+ "created.");
 	}
 	
+	public InetAddress getAddr(){
+		return hostAddress;
+	}
+	
 	public boolean clientConnected(){
 			try{
 				clientSocket = serverSocket.accept();
@@ -60,20 +66,48 @@ public class HostController {
 		try {
 			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
 			printWriter.println(cmd);
+			printWriter = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		printWriter.println(cmd);
+		
 	}
 	
 	public int getFromClient(){// TODO:overload with serializable
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			clientCmd = bufferedReader.read();
+			clientCmd = Integer.parseInt(bufferedReader.readLine());
+			System.out.println("received: "+clientCmd);
 			return clientCmd;
 		} catch (IOException e) {
 			System.out.println(e);
 			return 99999;// connection lost
+		}
+	}
+	InputStream is;
+	//BufferedReader bufferedReader = new BufferedReader(isr);
+
+	
+	public String[] getFromClientSTR(){// TODO:overload with serializable
+		try {
+			is = clientSocket.getInputStream();
+			System.out.println("getting");	
+			bufferedReader = new BufferedReader(new InputStreamReader(is));
+			System.out.println("got");
+			if(bufferedReader.ready()){
+				System.out.println("ready");
+				clientStatus = bufferedReader.readLine();
+				System.out.println("read");
+				System.out.println("received: "+clientStatus);
+				clientHash = clientStatus.split("/");
+			}
+			
+				
+			return clientHash;
+			
+		} catch (IOException e) {
+			System.out.println(e);
+			return clientHash;// connection lost
 		}
 	}
 	

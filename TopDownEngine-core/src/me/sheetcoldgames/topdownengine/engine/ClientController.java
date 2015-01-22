@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import me.sheetcoldgames.topdownengine.TopDownEngineShowcase;
+
 public class ClientController {
 	
 	private static final int PORT = 30480;
@@ -15,8 +17,11 @@ public class ClientController {
 	private boolean connected = false;
 	private BufferedReader bufferedReader; 
 	private int hostCmd;
+	public static float playerPositionX;
+	public static float playerPositionY;
+	public String clientStatus;
 	
-	public ClientController(InetAddress addr){
+	public ClientController(String addr){
 		
 		try{
 			clientSocket = new Socket(addr, PORT);
@@ -38,13 +43,24 @@ public class ClientController {
 		}
 	}
 	
-	public void sendToHost(int cmd){ // TODO:overload with serializable
+	public void sendToHost(String[] clientHash){ // TODO:overload with serializable // string with " cmd, playerPosX, playerPosY"
 		try {
+			//send client cmd
+			clientStatus = String.join("/", clientHash);
+			//clientStatus = clientStatus+"\n";
 			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
+			printWriter.println(clientStatus);
+			System.out.println("sent: "+clientStatus);
+			printWriter = null;
+			
+			/*//send client player position
+			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
+			printWriter.println(cmd);
+			System.out.println("sent: "+cmd);*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		printWriter.println(cmd);
+		
 	}
 	
 	public int getFromHost(){ // TODO:overload with serializable
