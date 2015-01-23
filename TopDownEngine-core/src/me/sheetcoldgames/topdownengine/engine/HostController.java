@@ -2,6 +2,7 @@ package me.sheetcoldgames.topdownengine.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -20,9 +21,11 @@ public class HostController {
 	private BufferedReader bufferedReader;
 	//private String inputLine;
 	private int clientCmd;
+	private String clientStatus;
+	private String hostStatus;
 	private InetAddress hostAddress;
 	private PrintWriter printWriter;
-
+	private String[] clientHash = {"0","90f","12f"};
 	
 	public HostController(){
 		try{
@@ -44,6 +47,10 @@ public class HostController {
 		System.out.println("Socket "+serverSocket+ "created.");
 	}
 	
+	public InetAddress getAddr(){
+		return hostAddress;
+	}
+	
 	public boolean clientConnected(){
 			try{
 				clientSocket = serverSocket.accept();
@@ -56,24 +63,51 @@ public class HostController {
 			return true;
 	}
 	
-	public void sendToClient(int cmd){ // TODO:overload with serializable
+	public void sendToClient(String[] hostHash){ // TODO:overload with serializable
 		try {
+			hostStatus = String.join("/", hostHash);
 			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
-			printWriter.println(cmd);
+			printWriter.println(hostStatus);
+			System.out.println("sent: "+hostStatus);
+			printWriter = null;
+			
+			//printWriter.println(cmd);
+			//printWriter = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		printWriter.println(cmd);
+		
 	}
 	
 	public int getFromClient(){// TODO:overload with serializable
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			clientCmd = bufferedReader.read();
+			clientCmd = Integer.parseInt(bufferedReader.readLine());
+			System.out.println("received: "+clientCmd);
 			return clientCmd;
 		} catch (IOException e) {
 			System.out.println(e);
 			return 99999;// connection lost
+		}
+	}
+	InputStream is;
+	
+	public String[] getFromClientSTR(){// TODO:overload with serializable
+		try {
+			is = clientSocket.getInputStream();
+			bufferedReader = new BufferedReader(new InputStreamReader(is));
+			if(bufferedReader.ready()){
+				clientStatus = bufferedReader.readLine();
+				System.out.println("received: "+clientStatus);
+				clientHash = clientStatus.split("/");
+			}
+			
+				
+			return clientHash;
+			
+		} catch (IOException e) {
+			System.out.println(e);
+			return clientHash;// connection lost
 		}
 	}
 	

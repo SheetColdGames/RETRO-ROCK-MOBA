@@ -2,10 +2,13 @@ package me.sheetcoldgames.topdownengine.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+
+import me.sheetcoldgames.topdownengine.TopDownEngineShowcase;
 
 public class ClientController {
 	
@@ -15,8 +18,11 @@ public class ClientController {
 	private boolean connected = false;
 	private BufferedReader bufferedReader; 
 	private int hostCmd;
+	public String clientStatus;
+	private String hostStatus;
+	private String[] hostHash = {"0","70f", "12f"};
 	
-	public ClientController(InetAddress addr){
+	public ClientController(String addr){
 		
 		try{
 			clientSocket = new Socket(addr, PORT);
@@ -38,13 +44,24 @@ public class ClientController {
 		}
 	}
 	
-	public void sendToHost(int cmd){ // TODO:overload with serializable
+	public void sendToHost(String[] clientHash){ // TODO:overload with serializable // string with " cmd, playerPosX, playerPosY"
 		try {
+			//send client cmd
+			clientStatus = String.join("/", clientHash);
+			//clientStatus = clientStatus+"\n";
 			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
+			printWriter.println(clientStatus);
+			System.out.println("sent: "+clientStatus);
+			printWriter = null;
+			
+			/*//send client player position
+			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
+			printWriter.println(cmd);
+			System.out.println("sent: "+cmd);*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		printWriter.println(cmd);
+		
 	}
 	
 	public int getFromHost(){ // TODO:overload with serializable
@@ -56,6 +73,27 @@ public class ClientController {
 			System.out.println("host -> client error");
 			e.printStackTrace();
 			return 9999;//connection lost
+		}
+	}
+	
+	InputStream is;
+	
+	public String[] getFromHostSTR(){// TODO:overload with serializable
+		try {
+			is = clientSocket.getInputStream();
+			bufferedReader = new BufferedReader(new InputStreamReader(is));
+			if(bufferedReader.ready()){
+				hostStatus = bufferedReader.readLine();
+				System.out.println("received: "+hostStatus);
+				hostHash = hostStatus.split("/");
+			}
+			
+				
+			return hostHash;
+			
+		} catch (IOException e) {
+			System.out.println(e);
+			return hostHash;// connection lost
 		}
 	}
 	
