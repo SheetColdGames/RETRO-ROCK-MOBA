@@ -26,13 +26,14 @@ public class NetworkController {
 	Input input;
 	
 	public Entity player;
+	public Entity player2;
 	
 	public ArrayList<LinkedList<SheetPoint>> groupPoints;
 	LinkedList<SheetPoint> currentPoints;
 	
 	public HostController host;
 	public ClientController client;
-	String hostAddr = "192.168.1.2"; 
+	String hostAddr = "192.168.1.10"; 
 	public int hostCmd = 99998;
 	public int clientCmd = 99999;
 	public String[] clientStatus = {"0","90f","12f"}; // "cmd/playerPosX/playerPosY"
@@ -72,8 +73,14 @@ public class NetworkController {
 		
 		player = new Entity();
 		player.position.set(90f, 12f);
+		player2 = new Entity();
+		player2.position.set(70f, 12f);
 		
-		camera.setTarget(player);
+		if (isHost){
+			camera.setTarget(player2);
+		} else{
+			camera.setTarget(player);
+		}
 		camera.update();
 	}
 	
@@ -126,6 +133,7 @@ public class NetworkController {
 	
 		handleInput();
 		updatePlayer();
+		updatePlayer2();
 		
 		camera.update();
 		
@@ -148,12 +156,10 @@ public class NetworkController {
 	public void connectionReceiveUpdate(){
 		if(connected){
 			if(isHost){
-				System.out.println("vai pegar");
 				clientStatus = host.getFromClientSTR();// aqui
 				clientCmd = Integer.parseInt(clientStatus[0]);
 				clientPosX = Float.parseFloat(clientStatus[1]);
 				clientPosY = Float.parseFloat(clientStatus[2]);
-				System.out.println("Positions received");
 				
 			}
 			else{
@@ -165,10 +171,10 @@ public class NetworkController {
 	
 	private void handleInput() {
 		if(isHost){
-			playerInput();
+			player2Input();
 		}
 		else{
-			player2Input();
+			playerInput();
 		}
 	}
 	
@@ -206,27 +212,27 @@ public class NetworkController {
 		
 		// horizontal motion
 		if (input.buttons[Input.RIGHT]) {
-			player.velocity.x += walkSpeed * dt;  
+			player2.velocity.x += walkSpeed * dt;  
 			clientCmd = 1;
 		} else if (input.buttons[Input.LEFT]) {
-			player.velocity.x -= walkSpeed * dt;
+			player2.velocity.x -= walkSpeed * dt;
 		} else {
-			player.velocity.x = MathUtils.lerp(player.velocity.x, 0f, .3f);
+			player2.velocity.x = MathUtils.lerp(player2.velocity.x, 0f, .3f);
 			clientCmd = 0;
 		}
 		
 		// vertical motion
 		if (input.buttons[Input.UP]) {
-			player.velocity.y += walkSpeed * dt;
+			player2.velocity.y += walkSpeed * dt;
 		} else if (input.buttons[Input.DOWN]) {
-			player.velocity.y -= walkSpeed * dt;
+			player2.velocity.y -= walkSpeed * dt;
 		} else {
-			player.velocity.y = MathUtils.lerp(player.velocity.y, 0f, .3f);
+			player2.velocity.y = MathUtils.lerp(player2.velocity.y, 0f, .3f);
 		}
 		
 		// clamping the maximum speed
-		player.velocity.x = MathUtils.clamp(player.velocity.x, -.2f, .2f);
-		player.velocity.y = MathUtils.clamp(player.velocity.y, -.2f, .2f);
+		player2.velocity.x = MathUtils.clamp(player2.velocity.x, -.2f, .2f);
+		player2.velocity.y = MathUtils.clamp(player2.velocity.y, -.2f, .2f);
 		
 		//System.out.println(Gdx.graphics.getFramesPerSecond());
 	}
@@ -292,9 +298,69 @@ public class NetworkController {
 				}	
 			}
 		}
+	}
+		
+		private void updatePlayer2() {
+			// This variable should be outside to avoid constant creation of new objects
+			Vector2 newEntPosition = new Vector2(
+					player2.position.x + player2.velocity.x, 
+					player2.position.y + player2.velocity.y);
+			
+			Vector2 intersectedPoint = new Vector2();
+			
+			// walk through all the walls
+			for (int currentGroup = 0; currentGroup < groupPoints.size(); currentGroup++) {
+				for (int currentPoint = 0; currentPoint < groupPoints.get(currentGroup).size()-1; currentPoint++) {
+					SheetPoint p1 = groupPoints.get(currentGroup).get(currentPoint);
+					SheetPoint p2 = groupPoints.get(currentGroup).get(currentPoint+1);
+					// does this wall intersects the player?
+//					if (Intersector.intersectSegmentCircle(
+//							groupPoints.get(currentGroup).get(currentPoint).pos, 
+//							groupPoints.get(currentGroup).get(currentPoint+1).pos, 
+//							newEntPosition, player.sqrRadius)) {
+
+					if (Intersector.intersectSegments(
+							p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y,
+							player2.position.x-player2.radius, player2.position.y,
+							player2.position.x+player2.radius, player2.position.y,
+							intersectedPoint)) {
+						// Checking horizontal collision
+						// Cancel horizontal velocity
+						player2.velocity.x = 0;
+						// Update the horizontal position with a slight offset
+						// p1 and p2 have the same x position
+						if (p1.pos.x < player2.position.x) {
+							// this value is smaller than the radius of the player (else, it wouldn't
+							float tmp = player2.position.x - newEntPosition.x;
+							player2.position.x = p1.pos.x + player2.radius - tmp;
+						} else {
+							float tmp = newEntPosition.x - player2.position.x ;
+							player2.position.x = p1.pos.x - player2.radius + tmp;
+						}
+					} else if (Intersector.intersectSegments(
+							p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y,
+							player2.position.x, player2.position.y-player2.radius,
+							player2.position.x, player2.position.y+player2.radius,
+							intersectedPoint)) {
+						// Checking vertical collision
+						player2.velocity.y = 0;
+						// Update the vertical position with a slight offset
+						if (p1.pos.y < player2.position.y) {
+							// this value is smaller than the radius of the player (else, it wouldn't
+							float tmp = player2.position.y - newEntPosition.y;
+							player2.position.y = p1.pos.y + player2.radius - tmp;
+						} else {
+							float tmp = newEntPosition.y - player2.position.y ;
+							player2.position.y = p1.pos.y - player2.radius + tmp;
+						}	
+					}	
+				}
+			}
 		
 			player.position.x += player.velocity.x;
 			player.position.y += player.velocity.y;
+			player2.position.x += player2.velocity.x;
+			player2.position.y += player2.velocity.y;
 		if(!isHost){
 			clientStatus[1] = String.valueOf(player.position.x+"f");
 			clientStatus[2] = String.valueOf(player.position.y+"f");

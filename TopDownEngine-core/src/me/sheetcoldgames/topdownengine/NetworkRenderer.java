@@ -17,24 +17,30 @@ public class NetworkRenderer {
 	
 	NetworkController controller;
 	ShapeRenderer sr;
+	//ShapeRenderer sr2;
 	
 	public NetworkRenderer(NetworkController controller) {
 		this.controller = controller;
 		sr = new ShapeRenderer();
+		//sr2 = new ShapeRenderer();
 	}
 	
 	public void dispose() {
 		sr.dispose();
+		//sr2.dispose();
 	}
 	
 	public void render() {
 		clearScreen();
 		sr.setProjectionMatrix(controller.camera.combined);
+		//sr2.setProjectionMatrix(controller.camera.combined);
 		
 		
 		sr.begin(ShapeType.Filled);
 		renderPlayer();
 		sr.end();
+		
+	
 		
 		sr.begin(ShapeType.Line);
 		renderMapPoints();
@@ -49,6 +55,7 @@ public class NetworkRenderer {
 	private void renderPlayer() {
 		sr.setColor(Colors.PLAYER);
 		sr.circle(controller.player.position.x, controller.player.position.y, .5f, 16);
+		sr.circle(controller.player2.position.x, controller.player2.position.y, .5f, 16);
 	}
 	
 	private void renderMapPoints() {
