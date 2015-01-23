@@ -22,6 +22,7 @@ public class HostController {
 	//private String inputLine;
 	private int clientCmd;
 	private String clientStatus;
+	private String hostStatus;
 	private InetAddress hostAddress;
 	private PrintWriter printWriter;
 	private String[] clientHash = {"0","90f","12f"};
@@ -62,11 +63,16 @@ public class HostController {
 			return true;
 	}
 	
-	public void sendToClient(int cmd){ // TODO:overload with serializable
+	public void sendToClient(String[] hostHash){ // TODO:overload with serializable
 		try {
+			hostStatus = String.join("/", hostHash);
 			printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
-			printWriter.println(cmd);
+			printWriter.println(hostStatus);
+			System.out.println("sent: "+hostStatus);
 			printWriter = null;
+			
+			//printWriter.println(cmd);
+			//printWriter = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -85,19 +91,13 @@ public class HostController {
 		}
 	}
 	InputStream is;
-	//BufferedReader bufferedReader = new BufferedReader(isr);
-
 	
 	public String[] getFromClientSTR(){// TODO:overload with serializable
 		try {
 			is = clientSocket.getInputStream();
-			System.out.println("getting");	
 			bufferedReader = new BufferedReader(new InputStreamReader(is));
-			System.out.println("got");
 			if(bufferedReader.ready()){
-				System.out.println("ready");
 				clientStatus = bufferedReader.readLine();
-				System.out.println("read");
 				System.out.println("received: "+clientStatus);
 				clientHash = clientStatus.split("/");
 			}

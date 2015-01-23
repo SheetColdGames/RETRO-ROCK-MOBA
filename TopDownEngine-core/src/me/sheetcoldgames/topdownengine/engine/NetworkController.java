@@ -37,8 +37,11 @@ public class NetworkController {
 	public int hostCmd = 99998;
 	public int clientCmd = 99999;
 	public String[] clientStatus = {"0","90f","12f"}; // "cmd/playerPosX/playerPosY"
+	public String[] hostStatus = {"0","70f","12f"}; // "cmd/playerPosX/playerPosY"
 	public float clientPosX = 9999999f;
 	public float clientPosY = 9999999f;
+	public float hostPosX = 9999999f;
+	public float hostPosY = 9999999f;
 	
 	public boolean isHost = false; //set false to use as client (as host it will wait for connection)
 	public boolean connected = false;
@@ -144,7 +147,7 @@ public class NetworkController {
 	public void connectionSendUpdate(){
 		if (connected){
 			if(isHost){
-				host.sendToClient(hostCmd);
+				host.sendToClient(hostStatus);
 			}
 			else{
 				client.sendToHost(clientStatus);
@@ -163,7 +166,11 @@ public class NetworkController {
 				
 			}
 			else{
-				hostCmd = client.getFromHost();
+				//hostCmd = client.getFromHost();
+				hostStatus = client.getFromHostSTR();// aqui
+				hostCmd = Integer.parseInt(hostStatus[0]);
+				hostPosX = Float.parseFloat(hostStatus[1]);
+				hostPosY = Float.parseFloat(hostStatus[2]);
 			}
 		}
 	}
@@ -364,8 +371,12 @@ public class NetworkController {
 		if(!isHost){
 			clientStatus[1] = String.valueOf(player.position.x+"f");
 			clientStatus[2] = String.valueOf(player.position.y+"f");
+			player2.position.x = hostPosX;
+			player2.position.y = hostPosY;
 		}
 		else{
+			hostStatus[1] = String.valueOf(player2.position.x+"f");
+			hostStatus[2] = String.valueOf(player2.position.y+"f");
 			player.position.x = clientPosX;
 			player.position.y = clientPosY;
 		}

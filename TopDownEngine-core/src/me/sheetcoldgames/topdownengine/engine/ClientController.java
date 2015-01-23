@@ -2,6 +2,7 @@ package me.sheetcoldgames.topdownengine.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -17,9 +18,9 @@ public class ClientController {
 	private boolean connected = false;
 	private BufferedReader bufferedReader; 
 	private int hostCmd;
-	public static float playerPositionX;
-	public static float playerPositionY;
 	public String clientStatus;
+	private String hostStatus;
+	private String[] hostHash = {"0","70f", "12f"};
 	
 	public ClientController(String addr){
 		
@@ -72,6 +73,27 @@ public class ClientController {
 			System.out.println("host -> client error");
 			e.printStackTrace();
 			return 9999;//connection lost
+		}
+	}
+	
+	InputStream is;
+	
+	public String[] getFromHostSTR(){// TODO:overload with serializable
+		try {
+			is = clientSocket.getInputStream();
+			bufferedReader = new BufferedReader(new InputStreamReader(is));
+			if(bufferedReader.ready()){
+				hostStatus = bufferedReader.readLine();
+				System.out.println("received: "+hostStatus);
+				hostHash = hostStatus.split("/");
+			}
+			
+				
+			return hostHash;
+			
+		} catch (IOException e) {
+			System.out.println(e);
+			return hostHash;// connection lost
 		}
 	}
 	
