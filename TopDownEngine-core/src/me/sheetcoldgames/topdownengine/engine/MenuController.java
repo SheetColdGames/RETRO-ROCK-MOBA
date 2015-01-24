@@ -2,12 +2,17 @@ package me.sheetcoldgames.topdownengine.engine;
 
 import java.util.ArrayList;
 
+import me.sheetcoldgames.topdownengine.NetworkRenderer;
+
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 
 public class MenuController {
 	
 	public boolean isFinished = false;
+	public NetworkController netController;
+	public NetworkRenderer netRenderer;
+	public boolean mp = false;
 	
 	OrthographicCamera camera;
 	
@@ -33,6 +38,12 @@ public class MenuController {
 		}
 	}
 	
+	public void initMP(boolean host){
+		netController = new NetworkController(input,host);
+		netController.isHost = host;
+		netRenderer = new NetworkRenderer(netController);
+	}
+	
 	public void dispose() {
 		
 	}
@@ -55,6 +66,19 @@ public class MenuController {
 			
 			for (int i = 0; i < buttons.size(); i++) {
 				if (buttons.get(i).contains(input.currentRawPoint.x, input.currentRawPoint.y)) {
+					if (i == 0){
+						isFinished = true;
+					}
+					
+					if (i == 1){
+						initMP(true);
+						mp = true;
+						isFinished = true;
+					} else if(i == 2){
+						initMP(false);
+						mp = true;
+						isFinished = true;
+					}
 					System.out.println("Index of button: " + i);
 				}
 			}

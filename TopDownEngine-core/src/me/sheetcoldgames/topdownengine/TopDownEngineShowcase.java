@@ -39,7 +39,10 @@ public class TopDownEngineShowcase extends ApplicationAdapter {
 	}
 	
 	public void render() {
-		if (jvController.isFinished) {
+		if (jvController.isFinished && jvController.mp) {
+			jvController.netController.update();
+			jvController.netRenderer.render();
+		} else if(jvController.isFinished && !jvController.mp){
 			rgController.update();
 			rgRenderer.render();
 		} else {
