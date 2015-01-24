@@ -11,4 +11,14 @@ public class Constants {
 	
 	public static final float VIEWPORT_WIDTH = WINDOW_WIDTH / TILE_SIZE;
 	public static final float VIEWPORT_HEIGHT= WINDOW_HEIGHT/ TILE_SIZE;
+	
+	public static final int PLAYER_ID = 1;
+	public static final float PLAYER_WALK_SPEED = .6f;
+	public static final float PLAYER_WIDTH = 1f;
+	public static final float PLAYER_HEIGHT = 1.5f;
+	
+	public static final int AI_ID = 2;
+	public static final float AI_WALK_SPEED = .3f;
+	public static final float AI_WIDTH = 1.5f;
+	public static final float AI_HEIGHT = 2f;
 }

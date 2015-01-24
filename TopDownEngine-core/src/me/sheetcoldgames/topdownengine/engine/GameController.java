@@ -1,6 +1,7 @@
 package me.sheetcoldgames.topdownengine.engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -17,6 +18,8 @@ import com.badlogic.gdx.math.Vector2;
  * This variable contains all the logic that handles inside of a game loop
  * There's only one copy of it and it is used by the renderer to draw stuff on
  * the screen
+ * DEFINING THE ID'S FOR THE ENTITIES:
+ * 
  * @author Rafael Giordanno
  *
  */
@@ -25,7 +28,9 @@ public class GameController {
 	public SheetCamera camera;
 	Input input;
 	
-	public Entity player;
+	public ArrayList<Entity> aEntity;
+	public int playerId = Constants.PLAYER_ID;
+	public int currentPlayerIndex = -1;
 	
 	public ArrayList<LinkedList<SheetPoint>> groupPoints;
 	LinkedList<SheetPoint> currentPoints;
@@ -45,10 +50,9 @@ public class GameController {
 		initTestMap("test.fis");
 		// =======
 		
-		player = new Entity();
-		player.position.set(90f, 12f);
+		initEntities();
 		
-		camera.setTarget(player);
+		camera.setTarget(aEntity.get(currentPlayerIndex));
 		camera.update();
 	}
 	
@@ -87,24 +91,115 @@ public class GameController {
 			// We don't have any points, we must initialize with a group with no points
 			groupPoints.add(new LinkedList<SheetPoint>());
 		}
-	}	
+	}
+	
+	private void initEntities() {		
+		// let's make an array of entities
+		aEntity = new ArrayList<Entity>();
+		
+		// This is the player
+		aEntity.add(new Entity());
+		aEntity.get(0).id 		= Constants.PLAYER_ID;
+		aEntity.get(0).width 	= Constants.PLAYER_WIDTH;
+		aEntity.get(0).height 	= Constants.PLAYER_HEIGHT;
+		aEntity.get(0).maxSpeed = Constants.PLAYER_WALK_SPEED;
+		aEntity.get(0).position.set(90f, 12f);
+		currentPlayerIndex = 0;
+		
+		// Then, for a new set of enemies, we keep adding them in for loops
+		/*
+		for (int k = aEntity.size(); k < aEntity.size()+2; k++) {
+			aEntity.add(new Entity());
+			aEntity.get(k).id 		= Constants.AI_ID;
+			aEntity.get(k).width 	= Constants.AI_WIDTH/2f;
+			aEntity.get(k).height 	= Constants.AI_HEIGHT/2f;
+			aEntity.get(k).maxSpeed = Constants.AI_WALK_SPEED;
+			
+		}
+		*/
+		
+		aEntity.add(new Entity());
+		aEntity.get(1).id 		= Constants.AI_ID;
+		aEntity.get(1).width 	= Constants.AI_WIDTH;
+		aEntity.get(1).height 	= Constants.AI_HEIGHT;
+		aEntity.get(1).maxSpeed = Constants.AI_WALK_SPEED;
+		aEntity.get(1).position.set(94f, 16f);
+		aEntity.get(1).followPoints.add(new Vector2(98f, 16f));
+		aEntity.get(1).followPoints.add(new Vector2(94f, 16f));
+		
+		/*
+		aEntity.add(new Entity());
+		aEntity.get(2).id 		= Constants.AI_ID;
+		aEntity.get(2).width 	= Constants.PLAYER_WIDTH/2f;
+		aEntity.get(2).height 	= Constants.PLAYER_HEIGHT/2f;
+		aEntity.get(2).maxSpeed = Constants.PLAYER_WALK_SPEED;
+		aEntity.get(2).position.set(90f, 16f);
+		
+		aEntity.add(new Entity());
+		aEntity.get(3).id 		= Constants.AI_ID;
+		aEntity.get(3).width 	= Constants.AI_WIDTH;
+		aEntity.get(3).height 	= Constants.AI_HEIGHT;
+		aEntity.get(3).maxSpeed = Constants.AI_WALK_SPEED;
+		aEntity.get(3).position.set(94f, 12f);
+		*/
+	}
 	
 	float dt; // deltaTime
 	
 	public void update() {
 		dt = Gdx.graphics.getDeltaTime();
+		reorganizeEntities(playerId);
+		handleAI();
 		handleInput();
-		updatePlayer();
+		updateEntities();
 		
 		camera.update();
 		// printLog();
 	}
 	
-	private void handleInput() {
-		playerInput();
+	private void reorganizeEntities(int id) {
+		// Since we're dealing with few entities, bubble sort
+		// Reorganizing the enemies
+		for (int i = 0; i < aEntity.size(); i++) {
+			for (int j = i+1; j < aEntity.size(); j++) {
+				// We want the guys with higher y values to be rendered first
+				if (aEntity.get(j).position.y > aEntity.get(i).position.y) {
+					Collections.swap(aEntity, i, j);
+				}
+			}
+		}
+		
+		// Let's find the player
+		for (int k = 0; k < aEntity.size(); k++) {
+			if (aEntity.get(k).id == id) {
+				currentPlayerIndex = k;
+				break;
+			}
+		}
 	}
 	
-	private void playerInput() {
+	private void handleAI() {
+		/*
+		 * How to handle with AI? First, let's address the problems
+		 * We have to make the AI follow a certain path to reach its destiny,
+		 * we can do that by simply drawing a straight line to its destiny and
+		 * change its path to something more accordingly.
+		 * I'm feeling dizzy to try this now, so I'll try that tomorrow 
+		 */
+		for (int k = 0; k < aEntity.size(); k++) {
+			if (k == currentPlayerIndex) {
+				continue;
+			}
+			
+			
+		}
+	}
+	
+	private void handleInput() {
+		playerInput(aEntity.get(currentPlayerIndex));
+	}
+	
+	private void playerInput(Entity player) {
 		float walkSpeed = 1f;
 		
 		// horizontal motion
@@ -146,12 +241,18 @@ public class GameController {
 		player.velocity.y = MathUtils.clamp(player.velocity.y, -.2f, .2f);
 	}
 	
+	private void updateEntities() {
+		for (Entity ent : aEntity) {
+			updateEntity(ent);
+		}
+	}
+	
 	/**
 	 * Crucial fact about this method: It only works with perpendicular walls.
 	 * It treats any entity as a cross for its collision detection.
 	 * Any wall variation collision coming soon
 	 */
-	private void updatePlayer() {
+	private void updateEntity(Entity player) {
 		// This variable should be outside to avoid constant creation of new objects
 		Vector2 newEntPosition = new Vector2(
 				player.position.x + player.velocity.x, 
